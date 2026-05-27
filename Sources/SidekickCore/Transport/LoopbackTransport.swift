@@ -20,6 +20,9 @@ public final class LoopbackTransport: Transport, @unchecked Sendable {
     public let remoteVideoTrackUpdates: AsyncStream<RTCVideoTrack?>
     private let videoTrackCont: AsyncStream<RTCVideoTrack?>.Continuation
 
+    public let terminated: AsyncStream<Void>
+    private let terminatedCont: AsyncStream<Void>.Continuation
+
     weak var peer: LoopbackTransport?
 
     public init() {
@@ -30,6 +33,10 @@ public final class LoopbackTransport: Transport, @unchecked Sendable {
         var vc: AsyncStream<RTCVideoTrack?>.Continuation!
         self.remoteVideoTrackUpdates = AsyncStream { vc = $0 }
         self.videoTrackCont = vc
+
+        var tc: AsyncStream<Void>.Continuation!
+        self.terminated = AsyncStream { tc = $0 }
+        self.terminatedCont = tc
     }
 
     /// Bind two transports as each other's peer.
@@ -50,5 +57,7 @@ public final class LoopbackTransport: Transport, @unchecked Sendable {
     public func close() async {
         dataContinuation.finish()
         videoTrackCont.finish()
+        terminatedCont.yield(())
+        terminatedCont.finish()
     }
 }

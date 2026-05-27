@@ -185,6 +185,26 @@ public final class AppModel: ObservableObject {
         permissions.noteLocalNetworkActivity()
         hostSessions.append(session)
         connectedClients.append(session.peer)
+
+        // Watch for the peer going away (iOS taps X, app backgrounds,
+        // network drops). Without this the HostSession + its
+        // ScreenCaptureKit stream stay alive forever and the next
+        // reconnect spawns a second one on top, which crashes
+        // somewhere between SCK and WebRTC.
+        let transport = session.transport
+        Task { @MainActor [weak self, weak session] in
+            for await _ in transport.terminated {
+                guard let self, let session else { return }
+                self.removeHostSession(session)
+                break
+            }
+        }
+    }
+
+    private func removeHostSession(_ session: HostSession) {
+        session.stop()
+        hostSessions.removeAll { $0 === session }
+        connectedClients.removeAll { $0 == session.peer }
     }
 
     private func teardownHostSessions() {

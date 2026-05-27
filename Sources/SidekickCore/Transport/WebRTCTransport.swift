@@ -72,6 +72,14 @@ public final class WebRTCTransport: NSObject, Transport, @unchecked Sendable {
     public let outboundCandidates: AsyncStream<RTCIceCandidate>
     private let candCont: AsyncStream<RTCIceCandidate>.Continuation
 
+    public let terminated: AsyncStream<Void>
+    private let terminatedCont: AsyncStream<Void>.Continuation
+    /// Guards the one-shot termination signal — ICE state and data
+    /// channel state can both fire `.closed`/`.failed` for the same
+    /// underlying death, but we want exactly one downstream event.
+    private let terminationLock = NSLock()
+    private var hasTerminated = false
+
     /// Fires once when the data channel is fully open + ready to read/write.
     private let dataChannelOpen = AsyncStreamOnce<Void>()
 
@@ -101,6 +109,10 @@ public final class WebRTCTransport: NSObject, Transport, @unchecked Sendable {
         var candCont: AsyncStream<RTCIceCandidate>.Continuation!
         self.outboundCandidates = AsyncStream { candCont = $0 }
         self.candCont = candCont
+
+        var termCont: AsyncStream<Void>.Continuation!
+        self.terminated = AsyncStream { termCont = $0 }
+        self.terminatedCont = termCont
 
         // Standard configuration: Google's public STUN. TURN servers can be
         // appended once we have credentials.
@@ -192,11 +204,26 @@ public final class WebRTCTransport: NSObject, Transport, @unchecked Sendable {
     }
 
     public func close() async {
+        signalTermination()
         peer.close()
         dataChannel?.close()
         incomingCont.finish()
         candCont.finish()
         trackCont.finish()
+    }
+
+    /// Fire the one-shot terminated signal. Called from ICE state
+    /// changes, data-channel state changes, and `close()` — guarded so
+    /// multiple call sites don't double-yield (they often all see the
+    /// same underlying death).
+    private func signalTermination() {
+        terminationLock.lock()
+        let alreadyDone = hasTerminated
+        hasTerminated = true
+        terminationLock.unlock()
+        guard !alreadyDone else { return }
+        terminatedCont.yield(())
+        terminatedCont.finish()
     }
 
     // MARK: - Signaling driver surface
@@ -289,7 +316,18 @@ extension WebRTCTransport: RTCPeerConnectionDelegate {
 
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {}
 
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {}
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
+        // `.disconnected` is transient — WebRTC may bring the link back
+        // via ICE renegotiation, so we don't treat it as terminal.
+        // `.failed` and `.closed` are permanent; fire the termination
+        // signal so the session above us tears down.
+        switch newState {
+        case .failed, .closed:
+            signalTermination()
+        default:
+            break
+        }
+    }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {}
 
@@ -311,8 +349,16 @@ extension WebRTCTransport: RTCPeerConnectionDelegate {
 
 extension WebRTCTransport: RTCDataChannelDelegate {
     public func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
-        if dataChannel.readyState == .open {
+        switch dataChannel.readyState {
+        case .open:
             dataChannelOpen.resolve(())
+        case .closed:
+            // Belt and braces — ICE `.closed` usually beats this, but
+            // if the peer closes only the data channel we still want
+            // to tear the session down.
+            signalTermination()
+        default:
+            break
         }
     }
     public func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {

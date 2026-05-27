@@ -47,5 +47,12 @@ public protocol Transport: AnyObject, Sendable {
 
     // MARK: - Lifecycle
 
+    /// Fires once when the underlying connection becomes permanently
+    /// unusable — ICE state goes `.failed`/`.closed`, the data channel
+    /// closes, or the peer otherwise vanishes. Consumers subscribe to
+    /// know when to tear down their session. The stream finishes after
+    /// the single yield so re-subscribing won't replay.
+    var terminated: AsyncStream<Void> { get }
+
     func close() async
 }
