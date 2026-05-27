@@ -1,5 +1,5 @@
 import SwiftUI
-import iUX
+import iUX_MacOS
 
 /// The single public surface for embedding Sidekick in a host app — same
 /// shape as ClonkModule, so a future bundle app can mount both.

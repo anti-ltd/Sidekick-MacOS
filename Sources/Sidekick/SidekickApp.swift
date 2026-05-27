@@ -1,6 +1,6 @@
 import AppKit
 import SwiftUI
-import iUX
+import iUX_MacOS
 import SidekickCore
 
 // Sidekick — a remote desktop app with deep-integration extras.

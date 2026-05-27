@@ -1,5 +1,5 @@
 import SwiftUI
-import iUX
+import iUX_MacOS
 
 /// Detail pane in host mode — shows whether we're broadcasting, walks the
 /// user through the Accessibility/Screen Recording grants, and lists

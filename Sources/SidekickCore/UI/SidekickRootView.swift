@@ -1,5 +1,5 @@
 import SwiftUI
-import iUX
+import iUX_MacOS
 
 /// The main window content. Sidebar lists peers + role switcher, detail
 /// shows the live session (or the role-picker placeholder when idle).

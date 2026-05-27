@@ -41,7 +41,7 @@ deep-integration extras.
    ├─ RPC/             RPCEnvelope + channels: clipboard, urlbar, files,
    │                   claude
    ├─ Roles/           HostSession / ClientSession
-   └─ UI/              SwiftUI screens (built on iUX)
+   └─ UI/              SwiftUI screens (built on iUX-MacOS)
 ```
 
 Discovery and the SDP/ICE handshake share the same Bonjour service
@@ -100,7 +100,7 @@ the capture pipeline is live. Connected iOS clients show up under
 
 ## State of play
 
-- iUX layout, Bonjour discovery, RPC envelope and every channel adapter:
+- iUX-MacOS layout, Bonjour discovery, RPC envelope and every channel adapter:
   **working**.
 - ScreenCaptureKit + VideoToolbox HEVC encoder: **wired but unused** —
   the WebRTC transport is stubbed.
@@ -114,6 +114,6 @@ the capture pipeline is live. Connected iOS clients show up under
 Projects/
 ├── sidekick-mac/   ← you are here
 ├── sidekick-ios/   ← companion iOS app
-├── iUX/            ← shared macOS UX library
+├── iUX-MacOS/      ← shared macOS UX library
 └── iUX-ios/        ← shared iOS UX library
 ```

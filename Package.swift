@@ -4,7 +4,7 @@ import PackageDescription
 // Sidekick (macOS) — remote desktop with deep-integration extras.
 //
 // The Mac app is dual-mode: host (its screen + input are shared) and client
-// (it drives another Mac). It links iUX for chrome and links its own core
+// (it drives another Mac). It links iUX-MacOS for chrome and links its own core
 // library, so that core can be embedded into other host apps later or driven
 // from a CLI for testing.
 let package = Package(
@@ -19,7 +19,7 @@ let package = Package(
     ],
     dependencies: [
         // Shared macOS UX layer — settings popover, menu-bar host, glass chrome.
-        .package(path: "../iUX"),
+        .package(path: "../iUX-MacOS"),
         // WebRTC — prebuilt Chromium WebRTC framework as a SwiftPM binary
         // dependency. Versions track Chromium milestones, so each major is a
         // potentially breaking step; pin tight on update and bump deliberately.
@@ -34,7 +34,7 @@ let package = Package(
         .target(
             name: "SidekickCore",
             dependencies: [
-                "iUX",
+                "iUX-MacOS",
                 .product(name: "WebRTC", package: "WebRTC"),
             ],
             path: "Sources/SidekickCore"
@@ -42,7 +42,7 @@ let package = Package(
         // Standalone entry point: AppDelegate, main window, icon renderer.
         .executableTarget(
             name: "Sidekick",
-            dependencies: ["SidekickCore", "iUX"],
+            dependencies: ["SidekickCore", "iUX-MacOS"],
             path: "Sources/Sidekick"
         ),
         .testTarget(

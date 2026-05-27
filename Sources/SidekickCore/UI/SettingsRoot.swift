@@ -1,7 +1,7 @@
 import SwiftUI
-import iUX
+import iUX_MacOS
 
-/// The settings popover content — wired into the iUX menu-bar host. Tabs
+/// The settings popover content — wired into the iUX-MacOS menu-bar host. Tabs
 /// match Clonk's pattern: General / About.
 struct SettingsRoot: View {
     @ObservedObject var model: AppModel

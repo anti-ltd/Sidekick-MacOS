@@ -1,5 +1,5 @@
 import SwiftUI
-import iUX
+import iUX_MacOS
 
 /// Detail pane when a client session is live. Remote video fills the canvas
 /// via `RemoteVideoView` (RTCMTLNSVideoView); the URL bar and Claude
@@ -85,7 +85,7 @@ private struct ClaudeTranscriptOverlay: View {
     }
 }
 
-// MARK: - iUX.glassPanel bridge for Sidekick
+// MARK: - iUX-MacOS.glassPanel bridge for Sidekick
 
 private extension View {
     func glassPanel(padding: CGFloat) -> some View {
