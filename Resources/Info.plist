@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleExecutable</key>
+	<string>Sidekick</string>
+	<key>CFBundleIdentifier</key>
+	<string>ltd.anti.Sidekick</string>
+	<key>CFBundleName</key>
+	<string>Sidekick</string>
+	<key>CFBundleDisplayName</key>
+	<string>Sidekick</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>26.0</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Sidekick</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+
+	<!-- Local network: Bonjour discovery + signaling. -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Sidekick finds your other Mac and iOS devices on this network to mirror the screen and forward keyboard, mouse and clipboard.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_sidekick._tcp</string>
+	</array>
+
+	<!-- Screen recording: host-mode video stream via ScreenCaptureKit. -->
+	<key>NSScreenCaptureUsageDescription</key>
+	<string>Sidekick captures this Mac's screen so your other devices can see and control it remotely.</string>
+
+	<!-- Accessibility: host-mode input injection via CGEvent. The OS prompts
+	     the user separately; this string surfaces in System Settings → Privacy
+	     & Security → Accessibility once that prompt has fired. -->
+	<key>NSAccessibilityUsageDescription</key>
+	<string>Sidekick synthesises keyboard and mouse events on this Mac so your other devices can control it remotely.</string>
+
+	<!-- Camera/mic deliberately omitted — Sidekick streams only the screen. -->
+</dict>
+</plist>
