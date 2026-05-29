@@ -17,11 +17,17 @@
 # Idempotent — running it twice does nothing on the second pass. Safe to
 # run unconditionally before `swift build` (the Makefile's `build` target
 # calls it).
+#
+# Usage: patch-webrtc-macos.sh [SCRATCH_PATH]
+#   SCRATCH_PATH defaults to the repo's own .build. appstage passes its
+#   separate --scratch-path (.build-appstage/<id>) so the APPSTAGE capture
+#   binary, built into that dir, gets the same patched macOS slice.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-MAC_SLICE="$ROOT/.build/artifacts/webrtc/WebRTC/WebRTC.xcframework/macos-x86_64_arm64/WebRTC.framework"
-IOS_SLICE="$ROOT/.build/artifacts/webrtc/WebRTC/WebRTC.xcframework/ios-arm64/WebRTC.framework"
+SCRATCH="${1:-$ROOT/.build}"
+MAC_SLICE="$SCRATCH/artifacts/webrtc/WebRTC/WebRTC.xcframework/macos-x86_64_arm64/WebRTC.framework"
+IOS_SLICE="$SCRATCH/artifacts/webrtc/WebRTC/WebRTC.xcframework/ios-arm64/WebRTC.framework"
 
 if [ ! -d "$MAC_SLICE" ]; then
     echo "patch-webrtc-macos: no macOS framework slice — run \`swift package resolve\` first." >&2

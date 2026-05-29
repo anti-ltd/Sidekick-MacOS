@@ -1,10 +1,22 @@
 # Sidekick (macOS)
 
+![Sidekick](Resources/banner.png)
+
 **Remote desktop with deep integration.** The companion to
 [sidekick-ios](../sidekick-ios) — share this Mac to your phone, or drive
 another Mac from this one.
 
 `host · client · webrtc · bonjour · cgevent · scrkit`
+
+---
+
+## Screenshots
+
+![Your Mac shows up instantly — Bonjour finds every Sidekick on the network](Resources/screenshots/mas/connect.png)
+
+![Share your screen in one click — set the role to Host and you're broadcasting](Resources/screenshots/mas/host.png)
+
+![Type URLs from the couch — the address bar mirrors to the host browser](Resources/screenshots/mas/client.png)
 
 ---
 
